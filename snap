@@ -1,4 +1,6 @@
 #!/bin/bash
+FFMPEG="./bin/ffmpeg"
+MEDIAINFO="./bin/mediainfo"
 ptint_bar(){
 printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' = || echo "==========="
 }
@@ -14,7 +16,7 @@ exit
 fi
 FILENAME="$1"
 echo "Processing: $FILENAME"
-MEDIA_INFO=`mediainfo "--Inform=Video;%FrameCount% %FrameRate%\n" "$FILENAME" | head -n1`
+MEDIA_INFO=`"$MEDIAINFO" "--Inform=Video;%FrameCount% %FrameRate%\n" "$FILENAME" | head -n1`
 TOTAL_FRAMES=$(echo $MEDIA_INFO| cut -d' ' -f 1)
 echo "Total frame: $TOTAL_FRAMES"
 FPS=$(echo $MEDIA_INFO| cut -d' ' -f 2)
@@ -27,7 +29,7 @@ ADD=$ADD_D
 for i in $(seq 1 $NUMFRAMES)
 do
 echo "Doing second $ADD"
-ffmpeg -loglevel panic -hide_banner -ss $ADD -i "$FILENAME" -frames:v 1 "$ADD-$FILENAME.png"
+"$FFMPEG" -loglevel panic -hide_banner -ss $ADD -i "$FILENAME" -frames:v 1 "$ADD-$FILENAME.png"
 ADD=$(($ADD+$ADD_D))
 done
 ptint_bar
